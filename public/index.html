@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>شحن الرصيد</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#070b1f;--card:#0f1538;--line:#2a3a9a;--txt:#f2f5ff;--mut:#8f9bd0;--ok:#22d39a;--gold:#ffc83a;--red:#e50914;--acc:#5b7cff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;min-height:100%}
+body{padding:14px 16px 90px;background:radial-gradient(120% 60% at 50% -10%,#1b2a8a55,transparent 60%),var(--bg);transition:background .3s}
+body.t-binance{--card:#14161d;--line:#6b5313;--acc:#f3ba2f;background:radial-gradient(120% 50% at 50% -10%,#6b53134d,transparent 60%),#0b0c10}
+body.t-stars{background:radial-gradient(120% 60% at 50% -10%,#3a2fa855,transparent 60%),var(--bg)}
+body.t-vc{--card:#fff;--txt:#1b1b22;--mut:#6a6a78;background:linear-gradient(180deg,#3a0000,#b20000 60%,#e50914);color:#fff}
+.pill{display:flex;gap:10px;align-items:center;justify-content:center;margin:6px auto 14px;padding:10px 18px;width:max-content;border:1.5px solid var(--line);border-radius:999px;font-weight:800;letter-spacing:.5px;direction:ltr;background:#0b1030aa}
+.pill b{color:#5ba2ff}.pill i{width:1px;height:18px;background:#4b5bb5}
+.pill .tgc{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#2b7bff,#1752e0);display:grid;place-items:center}
+h1{font-size:30px;line-height:1.35;margin:6px 0 6px;font-weight:900}
+h1 span{background:linear-gradient(90deg,#5ee1ff,#7a9bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);margin:0 0 16px}
+.wallet{border:2px solid transparent;border-radius:28px;padding:20px;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(120deg,#6a7dff,#2ec7ff) border-box;box-shadow:0 0 40px #3a56ff33}
+.wrow{display:flex;justify-content:space-between;align-items:flex-start}
+.wtitle{font-weight:800;font-size:22px}.live{color:var(--ok);font-weight:700;font-size:15px}
+.live:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ok);margin-left:6px;box-shadow:0 0 8px var(--ok)}
+.ico{width:58px;height:58px;border-radius:18px;background:#ffffff14;border:1px solid #ffffff22;display:grid;place-items:center;font-size:26px}
+.bal{font-size:48px;font-weight:900;direction:ltr;text-align:left;margin-top:10px}
+.lbl{color:var(--mut);font-size:14px}
+.idbox{display:inline-flex;gap:8px;align-items:center;border:1px solid #ffffff26;border-radius:14px;padding:9px 14px;font-weight:800;direction:ltr;margin-top:4px;background:#ffffff0d}
+.sec{display:flex;align-items:center;gap:12px;margin:22px 0 12px;font-weight:900;font-size:22px}
+.sec:before,.sec:after{content:"";flex:1;height:2px;background:linear-gradient(90deg,transparent,#3d58ff)}
+.m{display:flex;align-items:center;gap:12px;border:1.5px solid var(--line);background:var(--card);border-radius:26px;padding:16px;margin-bottom:14px;cursor:pointer;width:100%;color:inherit;text-align:right;font:inherit}
+.m.off{opacity:.45;pointer-events:none}
+.m .ic{width:62px;height:62px;border-radius:20px;background:#1a2470;border:1.5px solid #3b57ff;display:grid;place-items:center;font-size:30px;flex:none}
+.m .tx{flex:1}.m .tx b{display:block;font-size:22px}.m .tx small{color:var(--mut);font-size:14px;line-height:1.5}
+.badge{padding:8px 16px;border-radius:999px;font-weight:800;border:2px solid;font-size:15px}
+.b-fast{color:#ffc83a;border-color:#8a6a1a;background:#4a3510}.b-on{color:#22d39a;border-color:#157a5a;background:#0f3f35}.b-off{color:#aaa;border-color:#555;background:#333}
+.chev{color:#6c7dd6;font-size:22px}
+.back{display:inline-flex;gap:8px;align-items:center;border:1px solid #ffffff2e;background:#ffffff14;border-radius:999px;padding:10px 18px;color:inherit;font:inherit;font-weight:700;margin-bottom:12px}
+.panel{border:1.5px solid var(--line);background:var(--card);border-radius:28px;padding:18px;margin-bottom:14px}
+.hero{display:grid;place-items:center;text-align:center;margin:8px 0 14px}
+.hero .big{width:110px;height:110px;border-radius:32px;border:2.5px solid var(--acc);background:#10163f;display:grid;place-items:center;font-size:52px;box-shadow:0 0 40px #5b7cff55}
+.hero h2{margin:12px 0 2px;font-size:32px;color:var(--gold);font-weight:900}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chip{border:1.5px solid var(--line);background:#0b1030;border-radius:20px;padding:14px 8px;text-align:center;color:#fff;font:inherit;cursor:pointer}
+.chip b{display:block;font-size:30px;color:var(--gold)}.chip small{color:#b6c0f5;font-weight:700}
+.chip.sel{outline:3px solid var(--gold)}
+input{width:100%;border:1.5px solid var(--line);background:#0b1030;color:#fff;border-radius:18px;padding:16px;font:inherit;font-size:18px;margin-top:12px;outline:none}
+input::placeholder{color:#6d79b8}
+.recv{display:flex;justify-content:space-between;align-items:center;border:1.5px solid #1d8f78;background:#12332f;border-radius:18px;padding:14px 16px;margin-top:12px;direction:rtl}
+.recv b{font-size:26px;color:var(--ok);direction:ltr}
+.btn{width:100%;border:0;border-radius:999px;padding:18px;font:inherit;font-size:20px;font-weight:900;margin-top:14px;cursor:pointer;color:#2a1b00;background:linear-gradient(180deg,#ffe27a,#f6b81d);box-shadow:0 10px 30px #f6b81d55}
+.btn:disabled{opacity:.5}
+.btn.red{color:#fff;background:linear-gradient(180deg,#ff1a1a,#d00000);box-shadow:0 10px 30px #d0000066}
+.btn.ghost{background:#ffffff1c;color:inherit;box-shadow:none}
+.step{display:flex;gap:12px;align-items:center;font-weight:900;font-size:21px}
+.step i{width:46px;height:46px;border-radius:50%;border:2px solid var(--acc);display:grid;place-items:center;color:var(--acc);font-style:normal;flex:none}
+.hint{color:var(--mut);line-height:1.8;margin:8px 0}
+.copy{display:flex;gap:10px;align-items:center;margin-top:10px}
+.copy .v{flex:1;border:1.5px solid var(--line);background:#06070a;color:var(--acc);border-radius:20px;padding:16px;font-size:26px;font-weight:900;direction:ltr;text-align:center;overflow:hidden;text-overflow:ellipsis}
+.copy button{border:1.5px solid var(--line);background:#1b1e29;color:var(--acc);border-radius:18px;padding:16px;font:inherit;font-weight:800;cursor:pointer}
+.warn{text-align:center;color:var(--gold);font-weight:800;margin:10px 0}
+.light .panel,.t-vc .panel{background:#fff;color:#1b1b22;border-color:#fff}
+.t-vc .wbox{background:#fff;color:#1b1b22;border-radius:28px;padding:18px;margin-bottom:14px}
+.t-vc .wbox .bal{color:#0a8f3c}
+.t-vc .info{display:flex;justify-content:space-between;background:#f0f0f4;border-radius:18px;padding:12px 16px;margin-top:10px;font-weight:800;direction:ltr}
+.t-vc .info small{display:block;color:#6a6a78;font-weight:600}
+.t-vc .numbox{background:linear-gradient(120deg,#6e0000,#9b0000);color:#fff;border-radius:22px;padding:14px;margin:10px 0;text-align:center}
+.t-vc .numbox .n{border:2px dashed #ffffff66;border-radius:18px;padding:14px;font-size:30px;font-weight:900;direction:ltr;display:flex;justify-content:space-between;align-items:center}
+.t-vc .numbox .n button{background:#fff;color:#c00;border:0;border-radius:14px;padding:10px 14px;font-size:20px;cursor:pointer}
+.t-vc input{background:#f2f2f6;color:#111;border-color:#ddd}
+.t-vc input::placeholder{color:#8a8a98}
+.t-vc .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.t-vc .chips button{border:1px solid #ddd;background:#f4f4f8;color:#222;border-radius:16px;padding:12px 18px;font:inherit;font-weight:800;cursor:pointer}
+.t-vc .recv{background:#e9f9ef;border-color:#a5e0bb}.t-vc .recv b{color:#0a8f3c}.t-vc .recv span{color:#245}
+.t-vc h3{margin:6px 0 12px;font-size:24px;color:#1b1b22}
+.ok{text-align:center;padding:24px 10px}.ok .big{font-size:80px}.ok h2{color:var(--ok);margin:8px 0}
+.spin{width:54px;height:54px;border:5px solid #ffffff33;border-top-color:#fff;border-radius:50%;margin:16px auto;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:#000c;color:#fff;padding:12px 20px;border-radius:14px;font-weight:700;z-index:9;max-width:88%;text-align:center}
+.foot{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);padding:9px 20px;border:1px solid #3b4aa8;border-radius:999px;background:#0c1236ee;color:#5ba2ff;font-weight:800;direction:ltr;z-index:5}
+</style>
+</head>
+<body class="t-home">
+<div id="app"></div>
+<div class="foot" id="foot">@</div>
+<script>
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+let S = null, timers = [];
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ERR = {
+  auth:'تعذر التحقق من حسابك. افتح الصفحة من داخل البوت.', no_account:'ابدأ البوت الأول بإرسال /start.',
+  banned:'حسابك محظور.', maintenance:'البوت تحت الصيانة حاليًا.', rate:'محاولات كتير، استنى شوية وجرب تاني.',
+  unavailable:'الطريقة دي غير متاحة حاليًا.', bad_amount:'المبلغ غير صحيح أو أقل من الحد الأدنى.',
+  bad_sender:'رقم المحفظة غير صحيح (11 رقم).', bad_order:'معرف الطلب غير صحيح.', used:'معرف الطلب ده اتستخدم قبل كده.',
+  notfound:'ما لقيناش العملية. اتأكد من معرف الطلب وجرب تاني.', busy:'الرقم ده مستخدم في طلب شحن شغّال دلوقتي.',
+  too_many:'عدد المحاولات خلص، حاول بعد ساعة.', timeout:'السيرفر اتأخر، جرب تاني.', server:'خطأ في السيرفر، جرب بعد شوية.'
+};
+const errText = (r) => (r && (r.message || ERR[r.error])) || ERR.server;
+function toast(t){ const d=document.createElement('div'); d.className='toast'; d.textContent=t; document.body.appendChild(d); setTimeout(()=>d.remove(),2600); }
+function hap(k){ try{ tg.HapticFeedback.notificationOccurred(k); }catch(e){} }
+async function api(action, params={}){
+  try{
+    const r = await fetch('/api/'+action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({init_data:(tg&&tg.initData)||'',params})});
+    let j = await r.json();
+    if (j.status==='done') return j.result;
+    if (j.status==='pending'){
+      for(let i=0;i<8;i++){
+        const rr = await fetch('/api/result/'+j.id); const jj = await rr.json();
+        if (jj.status==='done') return jj.result;
+      }
+      return {ok:false,error:'timeout'};
+    }
+    return {ok:false,error:j.error||'server'};
+  }catch(e){ return {ok:false,error:'server'}; }
+}
+async function copy(t){
+  try{ await navigator.clipboard.writeText(t); }catch(e){ const a=document.createElement('textarea'); a.value=t; document.body.appendChild(a); a.select(); try{document.execCommand('copy')}catch(_){} a.remove(); }
+  toast('تم النسخ ✅'); hap('success');
+}
+function clearTimers(){ timers.forEach(clearInterval); timers=[]; }
+function setTheme(c){ document.body.className='t-'+c; }
+const usd = (n) => '$' + (Number(n)||0).toFixed(2);
+const mask = (id) => { id=String(id); return id.length>6 ? id.slice(0,3)+' ••• '+id.slice(-3) : id; };
+const back = (to='home') => `<button class="back" onclick="go('${to}')">→ رجوع</button>`;
+function go(v){ clearTimers(); VIEWS[v](); window.scrollTo(0,0); }
+
+async function refreshBalance(){ const r = await api('init'); if (r.ok){ S = r; } return r; }
+
+function home(){
+  setTheme('home');
+  const m = S.methods;
+  const card = (key, icon, name, desc, badge, cls) => `
+    <button class="m ${m[key].on?'':'off'}" onclick="go('${key}')">
+      <div class="ic">${icon}</div>
+      <div class="tx"><b>${name}</b><small>${desc}</small></div>
+      <span class="badge ${m[key].on?cls:'b-off'}">${m[key].on?badge:'غير متاح'}</span><span class="chev">‹</span>
+    </button>`;
+  $('#app').innerHTML = `
+    <div class="pill"><b>NUMBERS</b><i></i><span>${esc(S.brand)}</span><div class="tgc">✈️</div></div>
+    <h1>طرق دفع <span>سهلة وآمنة</span></h1>
+    <p class="sub">اختر الطريقة المناسبة لك واشحن رصيدك بكل سهولة</p>
+    <div class="wallet">
+      <div class="wrow"><div class="ico">👛</div>
+        <div style="text-align:right"><div class="wtitle">المحفظة</div><div class="live">نشط</div></div></div>
+      <div class="wrow" style="margin-top:12px;align-items:flex-end">
+        <div><div class="lbl">الرصيد المتاح</div><div class="bal">${usd(S.balance)}</div></div>
+        <div style="text-align:right"><div class="lbl">معرّف الحساب</div>
+          <div class="idbox" onclick="copy('${S.uid}')">⧉ ${mask(S.uid)}</div></div>
+      </div>
+    </div>
+    <div class="sec">طرق الدفع المتاحة</div>
+    ${card('stars','⭐','نجوم تيليجرام','ادفع من داخل تيليجرام وتُضاف تلقائياً','فوري','b-fast')}
+    ${card('binance','🔶','Binance Pay','تحويل عبر معرّف باينانس بدون رسوم','متاح','b-on')}
+    ${card('vodafone','🔴','فودافون كاش','تحويل من محفظتك وتُضاف خلال ثوانٍ','متاح','b-on')}
+    <p class="hint" style="text-align:center">قسائم الشحن وطرق أخرى: ابعت /pay في البوت.</p>`;
+}
+
+function stars(){
+  setTheme('stars');
+  const v = S.star_usd; let n = 0;
+  const preset = [100,250,500,1000];
+  $('#app').innerHTML = `${back()}
+    <div class="hero"><div class="big">⭐</div><h2>نجوم تيليجرام</h2><div class="sub">ادفع بالنجوم وتُضاف تلقائياً لرصيدك</div></div>
+    <div class="panel"><div class="grid">${preset.map(p=>`<button class="chip" data-n="${p}"><b>⭐ ${p}</b><small>${usd(p*v)}</small></button>`).join('')}</div>
+    <input id="sn" inputmode="numeric" placeholder="أو اكتب عدد النجوم">
+    <div class="recv"><b id="su">0.00 $</b><span>يُضاف إلى رصيدك</span></div>
+    <button class="btn" id="spay">⭐ الدفع بالنجوم</button></div>`;
+  const upd = () => { $('#su').textContent = (n*v).toFixed(2)+' $'; document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('sel',+c.dataset.n===n)); };
+  document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{ n=+c.dataset.n; $('#sn').value=n; upd(); });
+  $('#sn').oninput = (e)=>{ n=parseInt(e.target.value.replace(/\D/g,''))||0; upd(); };
+  $('#spay').onclick = async (e) => {
+    if (n<1) return toast('اختر عدد النجوم');
+    e.target.disabled=true;
+    const r = await api('stars',{stars:n});
+    e.target.disabled=false;
+    if (!r.ok) return toast(errText(r));
+    tg.openInvoice(r.link, async (st) => {
+      if (st==='paid'){
+        hap('success'); const old=S.balance; $('#app').innerHTML='<div class="ok"><div class="spin"></div><p class="hint">جاري إضافة الرصيد...</p></div>';
+        for(let i=0;i<12;i++){ await new Promise(r=>setTimeout(r,2500)); await refreshBalance(); if(S.balance>old) break; }
+        success(S.balance>old ? `تمت إضافة ${usd(S.balance-old)} لرصيدك` : 'تم الدفع، سيظهر الرصيد خلال لحظات');
+      } else if (st==='failed') toast('فشلت عملية الدفع');
+    });
+  };
+}
+
+function binance(){
+  setTheme('binance');
+  const mn = S.methods.binance.min;
+  $('#app').innerHTML = `${back()}
+    <div class="hero"><div class="big" style="background:#0b0c10;border-color:#8a6a1a;box-shadow:0 0 40px #f3ba2f44">🔶</div>
+      <h2 style="font-size:40px;letter-spacing:1px">BINANCE PAY</h2><div class="sub">دفع آمن ومباشر عبر Binance</div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#ffd940,#e6a915);color:#2a1b00;border-radius:28px;padding:18px 22px;margin-bottom:14px">
+      <b style="font-size:42px">USDT</b><div style="text-align:left"><div style="background:#0002;border-radius:14px;padding:8px 14px;font-weight:900">USDT 1 = $1</div></div></div>
+    <div class="panel">
+      <div class="step"><i>1</i>انسخ ايدي المحفظة</div>
+      <p class="hint">افتح Binance Pay وحوّل المبلغ بعملة USDT إلى هذا الايدي.</p>
+      <div class="copy"><div class="v">${esc(S.methods.binance.dest)}</div><button onclick="copy('${esc(S.methods.binance.dest)}')">⧉ نسخ</button></div>
+      <hr style="border:0;border-top:1px dashed #444;margin:18px 0">
+      <div class="step"><i>2</i>ادخل معرف الطلب</div>
+      <p class="hint">بعد التحويل، انسخ رقم الطلب (Order ID) من تفاصيل العملية والصقه هنا.</p>
+      <input id="oid" placeholder="# ادخل معرف الطلب" inputmode="numeric" dir="ltr">
+      <button class="btn ghost" id="paste" style="margin-top:8px;padding:12px;font-size:16px">📋 لصق</button>
+      <button class="btn" id="chk">تحقق وأضف الرصيد</button>
+    </div>
+    <div class="warn">⚠ أقل مبلغ للشحن ${mn}$</div>`;
+  $('#paste').onclick = async () => { try{ $('#oid').value=(await navigator.clipboard.readText()).trim(); }catch(e){ toast('الصق يدويًا في الخانة'); } };
+  $('#chk').onclick = async (e) => {
+    const v = $('#oid').value.trim().replace(/\s/g,'');
+    if (v.length<8) return toast('ادخل معرف الطلب كاملاً');
+    e.target.disabled=true; e.target.textContent='جاري التحقق من Binance...';
+    const r = await api('binance',{order_id:v});
+    e.target.disabled=false; e.target.textContent='تحقق وأضف الرصيد';
+    if (!r.ok){ hap('error'); return toast(errText(r)); }
+    hap('success'); S.balance=r.balance; success(`تمت إضافة ${usd(r.credited)} لرصيدك`);
+  };
+}
+
+function vodafone(){
+  setTheme('vc');
+  const rate = S.rate, mn = S.methods.vodafone.min_egp, dest = S.methods.vodafone.dest;
+  let egp = 0;
+  $('#app').innerHTML = `${back()}
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:4px 0 14px"><h2 style="margin:0;font-size:32px">Vodafone Cash</h2><div class="ico" style="background:#e50914">👛</div></div>
+    <div class="wbox"><div class="lbl">رصيدك الحالي</div><div class="bal">${usd(S.balance)}</div>
+      <div class="info"><div>EGP ${rate.toFixed(2)} = 1$<small>سعر الصرف</small></div><div>EGP ${mn}<small>الحد الأدنى</small></div></div></div>
+    <div class="panel" style="padding:0;overflow:hidden">
+      <div style="background:linear-gradient(90deg,#6e0000,#c20000);color:#fff;padding:18px"><b style="font-size:24px">ابدأ شحن رصيدك</b><div style="opacity:.85">حوّل ثم أكّد المبلغ</div></div>
+      <div style="padding:16px" id="vbody"></div></div>`;
+  const form = () => {
+    $('#vbody').innerHTML = `<h3>حوّل على الرقم ده</h3>
+      <div class="numbox"><div style="opacity:.9;margin-bottom:6px">رقم فودافون كاش (اضغط للنسخ)</div>
+        <div class="n"><span>${esc(dest)}</span><button onclick="copy('${esc(dest)}')">⧉</button></div>
+        <div style="margin-top:10px;font-weight:700">حوّل من رقمك المسجل بس</div></div>
+      <input id="vs" placeholder="🇪🇬 رقم محفظتك اللي حوّلت منها" inputmode="tel" dir="ltr">
+      <input id="va" placeholder="ج.م  ادخل المبلغ الذي حولته" inputmode="decimal" dir="ltr">
+      <div class="chips">${[50,100,200,500,1000].map(x=>`<button data-v="${x}">${x} ج</button>`).join('')}</div>
+      <div class="recv"><b id="vu">0.00 $</b><span>يُضاف إلى رصيدك</span></div>
+      <button class="btn red" id="vgo">تأكيد إرسال التحويل</button>`;
+    const upd = () => { $('#vu').textContent = (egp/rate).toFixed(2)+' $'; };
+    document.querySelectorAll('.chips button').forEach(b=>b.onclick=()=>{ egp=+b.dataset.v; $('#va').value=egp; upd(); });
+    $('#va').oninput = (e)=>{ egp=parseFloat(e.target.value.replace(',','.'))||0; upd(); };
+    $('#vgo').onclick = async (e) => {
+      const sender = $('#vs').value.trim();
+      if (egp < mn) return toast('أقل مبلغ '+mn+' ج');
+      e.target.disabled=true;
+      const r = await api('vc_create',{sender,egp});
+      e.target.disabled=false;
+      if (!r.ok){ hap('error'); return toast(errText(r)); }
+      if (r.status==='approved'){ hap('success'); S.balance=r.balance; return success(`تمت إضافة ${usd(r.usd)} لرصيدك`); }
+      waiting(r);
+    };
+  };
+  const waiting = (r) => {
+    let left = r.ttl;
+    $('#vbody').innerHTML = `<div class="ok" style="color:#222"><div class="spin" style="border-color:#0002;border-top-color:#c00"></div>
+      <h3>في انتظار وصول التحويل...</h3>
+      <p class="hint">حوّل <b>${r.egp} ج</b> من الرقم <b dir="ltr">${esc(r.sender)}</b> على <b dir="ltr">${esc(dest)}</b><br>هيتضاف رصيدك تلقائيًا أول ما التحويل يوصل.</p>
+      <div class="lbl" id="vt"></div>
+      <but
